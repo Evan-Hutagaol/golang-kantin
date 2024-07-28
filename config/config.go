@@ -58,12 +58,12 @@ func ConnectToDB() *gorm.DB {
 	}
 	fmt.Println("Success")
 
-	sqlDB, err := DB.DB()
-	if err != nil {
-		log.Fatal("Failed to get database instance: ", err)
-	}
-	sqlDB.SetMaxOpenConns(50);
-	sqlDB.SetMaxIdleConns(10);
-	sqlDB.SetConnMaxIdleTime(30)
+	// sqlDB, err := DB.DB()
+	// if err != nil {
+	// 	log.Fatal("Failed to get database instance: ", err)
+	// }
+	// sqlDB.SetMaxOpenConns(50);
+	// sqlDB.SetMaxIdleConns(10);
+	// sqlDB.SetConnMaxIdleTime(30)
 	return DB
 }
