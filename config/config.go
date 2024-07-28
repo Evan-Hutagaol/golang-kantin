@@ -2,12 +2,15 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
+
 
 var DB *gorm.DB
 
@@ -53,5 +56,13 @@ func ConnectToDB() *gorm.DB {
 		panic("Database Connection Error")
 	}
 	fmt.Println("Success")
+
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatal("Failed to get database instance: ", err)
+	}
+	sqlDB.SetMaxOpenConns(50);
+	sqlDB.SetMaxIdleConns(10);
+	sqlDB.SetConnMaxIdleTime(30)
 	return DB
 }

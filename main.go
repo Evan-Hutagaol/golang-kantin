@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,13 @@ func init() {
 }
 
 func main() {
+	defer func ()  {
+		sqlDB, err := DB.DB()
+		if err != nil {
+			log.Fatal("Failed to get database instance", err)
+		}
+		sqlDB.Close()
+	}()
 	authService := auth.NewAuthService()
 	userRepo := userRepo.NewUserRepository(DB)
 	userServ := userServ.NewUserService(userRepo)
