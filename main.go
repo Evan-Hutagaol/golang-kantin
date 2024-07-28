@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	_ "log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -43,15 +43,15 @@ func init() {
 }
 
 func main() {
-	defer func() {
-		sqlDB, err := DB.DB()
-		if err != nil {
-			log.Fatalf("Failed to get database instance: %v", err)
-		}
-		if err := sqlDB.Close(); err != nil {
-			log.Fatalf("Failed to close database connection: %v", err)
-		}
-	}()
+	// defer func() {
+	// 	sqlDB, err := DB.DB()
+	// 	if err != nil {
+	// 		log.Fatalf("Failed to get database instance: %v", err)
+	// 	}
+	// 	if err := sqlDB.Close(); err != nil {
+	// 		log.Fatalf("Failed to close database connection: %v", err)
+	// 	}
+	// }()
 	authService := auth.NewAuthService()
 	userRepo := userRepo.NewUserRepository(DB)
 	userServ := userServ.NewUserService(userRepo)
