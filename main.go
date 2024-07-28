@@ -43,12 +43,14 @@ func init() {
 }
 
 func main() {
-	defer func ()  {
+	defer func() {
 		sqlDB, err := DB.DB()
 		if err != nil {
-			log.Fatal("Failed to get database instance", err)
+			log.Fatalf("Failed to get database instance: %v", err)
 		}
-		sqlDB.Close()
+		if err := sqlDB.Close(); err != nil {
+			log.Fatalf("Failed to close database connection: %v", err)
+		}
 	}()
 	authService := auth.NewAuthService()
 	userRepo := userRepo.NewUserRepository(DB)

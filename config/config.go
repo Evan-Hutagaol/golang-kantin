@@ -66,6 +66,6 @@ func ConnectToDB() *gorm.DB {
 	}
 	sqlDB.SetMaxOpenConns(50);
 	sqlDB.SetMaxIdleConns(10);
-	sqlDB.SetConnMaxIdleTime(30)
+	sqlDB.SetConnMaxIdleTime(30 * time.Minute)
 	return DB
 }
