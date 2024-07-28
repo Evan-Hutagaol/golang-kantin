@@ -49,11 +49,14 @@ func ConnectToDB() *gorm.DB {
 
 	var err error
 	fmt.Println("dsn : ", dsn)
-	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	// DB, err = gorm.Open("mysql", dsn)
 	if err != nil {
-		fmt.Println("failed")
-		panic("Database Connection Error")
+		// fmt.Println("failed")
+		// panic("Database Connection Error")
+		log.Fatal("Database connection error: ", err)
 	}
 	fmt.Println("Success")
 
