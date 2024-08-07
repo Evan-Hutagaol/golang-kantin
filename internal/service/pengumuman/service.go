@@ -14,6 +14,7 @@ type PengumumanService interface {
 	GetAllPengumuman() ([]models.Pengumuman, error)
 	UpdatePengumuman(pengumumanID uint, inputData api.UpdatePengumumanInput) (models.Pengumuman, error)
 	DeletePengumumanByID(pengumumanID uint) error
+	GetPengumumanByID(pengumumanID uint) (models.Pengumuman, error)
 	// GetPengumumanByID(pengumumanID uint) (models.Pengumuman, error)
 }
 
@@ -23,6 +24,15 @@ type pengumumanService struct {
 
 func NewPengumumanService(repo pengumuman.PengumumanRepository) PengumumanService {
 	return &pengumumanService{repo}
+}
+
+func (s *pengumumanService) GetPengumumanByID(pengumumanID uint) (models.Pengumuman, error) {
+	pengumuman, err := s.repo.GetPengumumanByID(pengumumanID)
+	if err != nil {
+		return models.Pengumuman{}, err
+	}
+
+	return pengumuman, nil
 }
 
 func (s *pengumumanService) CreatePengumuman(pengumuman models.Pengumuman) (models.Pengumuman, error) {

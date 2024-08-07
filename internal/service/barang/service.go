@@ -12,6 +12,7 @@ type BarangService interface {
 	ShowBarang(id uint) error
 	HideBarang(id uint) error
 	GetPengumuman(page int, perPage int) ([]models.Barang, error)
+	GetAllBarangs() ([]models.Barang, error)
 }
 
 type barangService struct {
@@ -20,6 +21,15 @@ type barangService struct {
 
 func NewBarangService(repo  barang.BarangRepository) BarangService {
 	return &barangService{repo: repo}
+}
+
+func (s *barangService) GetAllBarangs() ([]models.Barang, error) {
+	barangs, err := s.repo.GetAllBarangs()
+	if err != nil {
+		return nil, err
+	}
+
+	return barangs, nil
 }
 
 func (s *barangService) CreateBarang(barang *models.Barang) error {

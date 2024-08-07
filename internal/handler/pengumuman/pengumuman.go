@@ -17,6 +17,7 @@ type PengumumanHandler interface {
 	GetAllPengumuman(c *gin.Context)
 	UpdatedPengumuman(c *gin.Context)
 	DeletePengumumanByID(c *gin.Context)
+	GetPengumumanByID(c *gin.Context)
 }
 
 type pengumumanHandler struct {
@@ -40,13 +41,27 @@ func (h *pengumumanHandler) CreatePengumuman(c *gin.Context) {
 	// Konversi string tanggal menjadi tipe data time.Time
 	// time.Parse("01-2006", inputPengalaman.TahunMulai)
 
-	parsedTime, err := time.Parse("2006-01-02", inputPengumuman.TanggalBerakhir)
+	// parsedTime, err := time.Parse("2006-01-02", inputPengumuman.TanggalBerakhir)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnprocessableEntity, err)
+	// 	return
+	// }
+
+	// Parse tanggal_berakhir
+	tanggalBerakhir, err := time.Parse("2006-01-02", inputPengumuman.TanggalBerakhir) // Adjust layout if needed
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
 		return
 	}
+
+	// Validate tanggal_berakhir is not in the past
+	if tanggalBerakhir.Before(time.Now()) {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Field Tanggal berakhir cannot be in the past", "data": nil})
+		return
+	}
+
 	createPengumuman := models.Pengumuman{
-		TanggalBerakhir: parsedTime,
+		TanggalBerakhir: tanggalBerakhir,
 		Deskripsi:       inputPengumuman.Deskripsi,
 	}
 
@@ -83,6 +98,21 @@ func (h *pengumumanHandler) GetAllPengumuman(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": pengumumans})
 }
 
+func (h *pengumumanHandler) GetPengumumanByID(c *gin.Context) {
+	pengumumanID, _ := strconv.Atoi(c.Param("id"))
+	pengumuman, err := h.service.GetPengumumanByID(uint(pengumumanID))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "error": "failed to get pengumuman by id"})
+		return 
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "successfully fetch pengumuman",
+		"data": pengumuman,
+	})
+}
+
 func (h *pengumumanHandler) UpdatedPengumuman(c *gin.Context) {
 	pengumumanID, _ := strconv.Atoi(c.Param("id")) // 183
 	log.Println("error 1 handler")
@@ -92,6 +122,20 @@ func (h *pengumumanHandler) UpdatedPengumuman(c *gin.Context) {
 		return
 	}
 	log.Println("error 2 handler")
+
+	// Parse tanggal_berakhir
+	tanggalBerakhir, err := time.Parse("2006-01-02", inputPengumuman.TanggalBerakhir) // Adjust layout if needed
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
+		return
+	}
+
+	// Validate tanggal_berakhir is not in the past
+	if tanggalBerakhir.Before(time.Now()) {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Field Tanggal berakhir cannot be in the past", "data": nil})
+		return
+	}
+
 	updatedPengumuman, err := h.service.UpdatePengumuman(uint(pengumumanID), inputPengumuman)
 	if err != nil {
 		response := gin.H{

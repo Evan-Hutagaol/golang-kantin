@@ -19,7 +19,7 @@ type BarangHandler interface {
 	ShowBarang(c *gin.Context)
 	HideBarang(c *gin.Context)
 	GetPengumuman(c *gin.Context)
-	// GetAllBarang(c *gin.Context)
+	GetAllBarangs(c *gin.Context)
 }
 
 type barangHandler struct {
@@ -28,6 +28,18 @@ type barangHandler struct {
 
 func NewBarangHandler(serv barang.BarangService) BarangHandler {
 	return &barangHandler{serv: serv}
+}
+
+func (h *barangHandler) GetAllBarangs(c *gin.Context) {
+	barangs, err := h.serv.GetAllBarangs()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch barangs!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data": barangs,
+	})
 }
 
 func (h *barangHandler) CreateBarang(c *gin.Context) {

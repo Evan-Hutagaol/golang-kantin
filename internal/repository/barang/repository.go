@@ -15,6 +15,7 @@ type BarangRepository interface {
 	FindByID(id uint) (models.Barang, error)
 	HideBarang(barang models.Barang) error
 	GetPengumuman(page int, perPage int) ([]models.Barang, error)
+	GetAllBarangs() ([]models.Barang, error)
 }
 
 type barangRepository struct {
@@ -23,6 +24,15 @@ type barangRepository struct {
 
 func NewBarangRepository(db *gorm.DB) BarangRepository {
 	return &barangRepository{db: db}
+}
+
+func (r *barangRepository) GetAllBarangs() ([]models.Barang, error) {
+	tx := r.db.Begin()
+	var barangs []models.Barang
+	if err := tx.Debug().Preload("User").Find(&barangs).Error; err != nil {
+		return nil, err
+	}
+	return barangs, nil
 }
 
 func (r *barangRepository) CreateBarang(barang *models.Barang) error {

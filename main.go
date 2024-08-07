@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "fmt"
 	_ "log"
 	"os"
 
@@ -52,12 +53,15 @@ func main() {
 	// 		log.Fatalf("Failed to close database connection: %v", err)
 	// 	}
 	// }()
+
 	authService := auth.NewAuthService()
 	userRepo := userRepo.NewUserRepository(DB)
 	userServ := userServ.NewUserService(userRepo)
 	userHandler := userHandler.NewUserHandler(userServ, authService)
 
 	pengumumanRepo := pengumumanRepo.NewPengumumanRepository(DB)
+	// pengumuman, _ := pengumumanRepo.GetPengumumanByID(350)
+	// fmt.Println("pengumuman by id : ", pengumuman)
 	pengumumanServ := pengumumanServ.NewPengumumanService(pengumumanRepo)
 	pengumumanHandler := pengumumanHandler.NewPengumumanHandler(pengumumanServ)
 
@@ -66,7 +70,11 @@ func main() {
 	feedbackHandler := feedbackHandler.NewFeedbackHandler(feedbackServ)
 
 	barangRepo := barangRepo.NewBarangRepository(DB)
+	// barangs, _ := barangRepo.GetAllBarangs()
+	// fmt.Println("barangs with user : ", barangs)
 	barangServ := barangServ.NewBarangService(barangRepo)
+	// barangs, _ := barangServ.GetAllBarangs()
+	// fmt.Println("baransg bro users : ", barangs)
 	barangHandler := barangHandler.NewBarangHandler(barangServ)
 
 	menuMakanRepo := menuMakanRepo.NewMenuMakananRepo(DB)
@@ -107,6 +115,7 @@ func main() {
 	api.POST("/pengumuman", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.CreatePengumuman)
 	// 3
 	api.GET("/pengumuman", middleware.AuthBothMiddleware(authService, userServ), pengumumanHandler.GetAllPengumuman)
+	api.GET("/pengumuman/:id", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.GetPengumumanByID)
 	// new request update
 	api.PUT("/pengumuman/:id", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.UpdatedPengumuman)
 	api.DELETE("/pengumuman/:id", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.DeletePengumumanByID)
@@ -123,6 +132,7 @@ func main() {
 	api.GET("/show-barangs/:id", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.ShowBarang)
 	// 12
 	api.GET("/hide-barangs/:id", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.HideBarang)
+	api.GET("/all-barangs", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.GetAllBarangs)
 
 	// user
 	// 6
