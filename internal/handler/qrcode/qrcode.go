@@ -38,11 +38,13 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 	// 	Allergies string `json:"allergies" form:"allergies"`
 	// 	File      string `json:"file" form:"file"`
 	// }
+
 	var req RequestData
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
+
 	absensiType := req.AbsensiType
 	fmt.Println("absensiType : ", absensiType)
 	in := "masuk"
@@ -53,13 +55,29 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid absensi type"})
 		return
 	}
+    // zones := []string{
+    //     "Asia/Jakarta",
+    //     "Asia/Bangkok",
+    //     "Asia/Singapore",
+    //     // Add more time zones to check
+    // }
 
-	loc, err := time.LoadLocation("Asia/Jakarta")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success2": false, "error": err.Error()})
-		return
-	}
-	now := time.Now().In(loc)
+	// loc, err := time.LoadLocation("Asia/Jakarta")
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"success2": false, "error": err.Error()})
+	// 	return
+	// }
+    loc, err := time.LoadLocation("Asia/Jakarta")
+    if err != nil {
+        // Attempt using an alternative time zone if the preferred one fails
+        loc, err = time.LoadLocation("Asia/Bangkok")
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"success2": false, "error": "Failed to load time zone: " + err.Error()})
+            return
+        }
+    }
+
+    now := time.Now().In(loc)
 	var validFrom, validTo time.Time
 
 	if absensiType == "masuk" {
@@ -69,15 +87,7 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 		validFrom = time.Date(now.Year(), now.Month(), now.Day(), 23, 0, 0, 0, loc)
 		validTo = time.Date(now.Year(), now.Month(), now.Day(), 23, 50, 0, 0, loc)
 	}
-
-	// if absensiType == "masuk" {
-	//     validFrom = time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, time.UTC, loc) // Example: 08:00:00
-	//     validTo = time.Date(now.Year(), now.Month(), now.Day(), 17, 30, 0, time.UTC, loc) // Example: 17:30:00
-	// } else if absensiType == "keluar" {
-	//     validFrom = time.Date(now.Year(), now.Month(), now.Day(), 17, 0, 0, time.UTC, loc) // Example: 17:00:00
-	//     validTo = time.Date(now.Year(), now.Month(), now.Day(), 23, 50, 0, time.UTC, loc) // Example: 23:50:00
-	// }
-
+    
 	qrCode := absensiType + "-" + now.Format("20060102150405")
 	filename := qrCode + ".png"
 
