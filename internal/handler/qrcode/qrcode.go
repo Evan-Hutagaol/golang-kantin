@@ -42,8 +42,8 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
     var validFrom, validTo time.Time
 
     if absensiType == "masuk" {
-        validFrom = time.Date(now.Year(), now.Month(), now.Day(), 22, 0, 0, 0, loc)
-        validTo = time.Date(now.Year(), now.Month(), now.Day(), 23, 30, 0, 0, loc)
+        validFrom = time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, loc)
+        validTo = time.Date(now.Year(), now.Month(), now.Day(), 8, 30, 0, 0, loc)
     } else if absensiType == "keluar" {
         validFrom = time.Date(now.Year(), now.Month(), now.Day(), 23, 0, 0, 0, loc)
         validTo = time.Date(now.Year(), now.Month(), now.Day(), 23, 50, 0, 0, loc)
