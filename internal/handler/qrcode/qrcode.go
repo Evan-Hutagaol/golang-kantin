@@ -39,6 +39,10 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 		return
 	}
     absensiType := req.AbsensiType
+    fmt.Println("absensiType : ", absensiType)
+    in := "masuk"
+    isSame := absensiType == in
+    fmt.Println("is true ? ", isSame)
 	// absensiType := c.PostForm("absensi_type")
 	if absensiType != "masuk" && absensiType != "keluar" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid absensi type"})
