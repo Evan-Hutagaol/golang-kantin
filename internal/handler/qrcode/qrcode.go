@@ -30,23 +30,27 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 	//     c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 	//     return
 	// }
-	type RequestData struct {
-		AbsensiType string `json:"absensi_type" form:"absensi_type"`
-	}
+	// type RequestData struct {
+	// 	AbsensiType string `json:"absensi_type" form:"absensi_type"`
+	// }
 	// type AllergyReportInput struct {
 	// 	// UserID    uint   `json:"user_id" form:"user_id"`
 	// 	Allergies string `json:"allergies" form:"allergies"`
 	// 	File      string `json:"file" form:"file"`
 	// }
 
-	var req RequestData
-	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
-		return
-	}
+	// var req RequestData
+	// if err := c.ShouldBind(&req); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+	// 	return
+	// }
 
-	absensiType := req.AbsensiType
-	fmt.Println("absensiType : ", absensiType)
+    // fmt.Println("req : ", req)
+
+	// absensiType := req.AbsensiType
+	
+    absensiType := c.PostForm("absensi_type")
+    fmt.Println("absensiType : ", absensiType)
 	in := "masuk"
 	isSame := absensiType == in
 	fmt.Println("is true ? ", isSame)
