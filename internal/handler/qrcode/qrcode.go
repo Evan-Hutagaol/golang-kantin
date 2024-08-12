@@ -35,7 +35,7 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 	}
 	var req RequestData
 	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
     absensiType := req.AbsensiType
@@ -49,7 +49,11 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 		return
 	}
 
-	loc, _ := time.LoadLocation("Asia/Jakarta")
+	loc, err := time.LoadLocation("Asia/Jakarta")
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"success2": false, "error": err.Error()})
+		return
+    }
 	now := time.Now().In(loc)
 	var validFrom, validTo time.Time
 
@@ -72,7 +76,7 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 	qrCode := absensiType + "-" + now.Format("20060102150405")
 	filename := qrCode + ".png"
 
-	err := utils.GenerateQRCode(qrCode, filename)
+	err = utils.GenerateQRCode(qrCode, filename)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate QR code"})
 		return
