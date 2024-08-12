@@ -31,18 +31,23 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 	//     return
 	// }
 	type RequestData struct {
-		AbsensiType string `json:"absensi_type"`
+		AbsensiType string `json:"absensi_type" form:"absensi_type"`
 	}
+	// type AllergyReportInput struct {
+	// 	// UserID    uint   `json:"user_id" form:"user_id"`
+	// 	Allergies string `json:"allergies" form:"allergies"`
+	// 	File      string `json:"file" form:"file"`
+	// }
 	var req RequestData
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
 	}
-    absensiType := req.AbsensiType
-    fmt.Println("absensiType : ", absensiType)
-    in := "masuk"
-    isSame := absensiType == in
-    fmt.Println("is true ? ", isSame)
+	absensiType := req.AbsensiType
+	fmt.Println("absensiType : ", absensiType)
+	in := "masuk"
+	isSame := absensiType == in
+	fmt.Println("is true ? ", isSame)
 	// absensiType := c.PostForm("absensi_type")
 	if absensiType != "masuk" && absensiType != "keluar" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid absensi type"})
@@ -50,10 +55,10 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 	}
 
 	loc, err := time.LoadLocation("Asia/Jakarta")
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"success2": false, "error": err.Error()})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success2": false, "error": err.Error()})
 		return
-    }
+	}
 	now := time.Now().In(loc)
 	var validFrom, validTo time.Time
 
