@@ -67,27 +67,44 @@ func (db *qrcodeHandler) GenerateQR(c *gin.Context) {
 	// 	c.JSON(http.StatusBadRequest, gin.H{"success2": false, "error": err.Error()})
 	// 	return
 	// }
+    // loc, err := time.LoadLocation("Asia/Jakarta")
+    // if err != nil {
+    //     // Attempt using an alternative time zone if the preferred one fails
+    //     loc, err = time.LoadLocation("Asia/Bangkok")
+    //     if err != nil {
+    //         c.JSON(http.StatusInternalServerError, gin.H{"success2": false, "error": "Failed to load time zone: " + err.Error()})
+    //         return
+    //     }
+    // }
+
+    // now := time.Now().In(loc)
+	// var validFrom, validTo time.Time
+
+	// if absensiType == "masuk" {
+	// 	validFrom = time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, loc)
+	// 	validTo = time.Date(now.Year(), now.Month(), now.Day(), 8, 30, 0, 0, loc)
+	// } else if absensiType == "keluar" {
+	// 	validFrom = time.Date(now.Year(), now.Month(), now.Day(), 23, 0, 0, 0, loc)
+	// 	validTo = time.Date(now.Year(), now.Month(), now.Day(), 23, 50, 0, 0, loc)
+	// }
+    
     loc, err := time.LoadLocation("Asia/Jakarta")
     if err != nil {
-        // Attempt using an alternative time zone if the preferred one fails
-        loc, err = time.LoadLocation("Asia/Bangkok")
-        if err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"success2": false, "error": "Failed to load time zone: " + err.Error()})
-            return
-        }
+        loc = time.UTC // Fallback to UTC if the location fails to load
     }
 
     now := time.Now().In(loc)
-	var validFrom, validTo time.Time
+    var validFrom, validTo time.Time
 
-	if absensiType == "masuk" {
-		validFrom = time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, loc)
-		validTo = time.Date(now.Year(), now.Month(), now.Day(), 8, 30, 0, 0, loc)
-	} else if absensiType == "keluar" {
-		validFrom = time.Date(now.Year(), now.Month(), now.Day(), 23, 0, 0, 0, loc)
-		validTo = time.Date(now.Year(), now.Month(), now.Day(), 23, 50, 0, 0, loc)
-	}
-    
+    if absensiType == "masuk" {
+        validFrom = time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, loc)
+        validTo = time.Date(now.Year(), now.Month(), now.Day(), 8, 30, 0, 0, loc)
+    } else if absensiType == "keluar" {
+        validFrom = time.Date(now.Year(), now.Month(), now.Day(), 23, 0, 0, 0, loc)
+        validTo = time.Date(now.Year(), now.Month(), now.Day(), 23, 50, 0, 0, loc)
+    }
+
+
 	qrCode := absensiType + "-" + now.Format("20060102150405")
 	filename := qrCode + ".png"
 
