@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -25,7 +26,7 @@ var SECRET_KEY = "SECRET_KEY_OM"
 func (s *jwtService) GenerateToken(userID int) (string, error) {
 	claim := jwt.MapClaims{}
 	claim["user_id"] = userID
-	// claim["exp"] = time.Now().Add(time.Duration(1) * time.Hour).Unix()
+	claim["exp"] = time.Now().Add(time.Hour * 1).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 

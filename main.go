@@ -33,13 +33,15 @@ import (
 	userRepo "github.com/onainadapdap1/golang_kantin/internal/repository/user"
 	userServ "github.com/onainadapdap1/golang_kantin/internal/service/user"
 
+	qrcodeHandler "github.com/onainadapdap1/golang_kantin/internal/handler/qrcode"
+
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
 func init() {
-	// config.LoadEnv()
+	config.LoadEnv()
 	DB = config.ConnectToDB()
 }
 
@@ -85,6 +87,9 @@ func main() {
 	allergyReportServ := allergyReportServ.NewAllergyReportServ(allergyReportRepo)
 	allergyReportHandler := allergyReportHandler.NewAllergyReportHandler(allergyReportServ)
 
+	qrcodeHandler := qrcodeHandler.NewQrcodehandler(DB)
+	
+
 	router := gin.Default()
 	api := router.Group("/api/v1")
 	// Membuat pengumuman baru
@@ -110,6 +115,11 @@ func main() {
 		})
 	})
 	api.POST("/login", userHandler.Login)
+	
+	//admin generate qrcode
+	api.POST("/generate-qr", middleware.AuthAdminMiddleware(authService, userServ), qrcodeHandler.GenerateQR) 
+	// user scan barcode
+	api.POST("/scan-qr", middleware.AuthUserMiddleware(authService, userServ), qrcodeHandler.ScanQR)
 	// admin
 	// 2
 	api.POST("/pengumuman", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.CreatePengumuman)
