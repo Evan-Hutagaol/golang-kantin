@@ -151,8 +151,14 @@ func (db *qrcodeHandler) ScanQR(c *gin.Context) {
 		return
 	}
 
-	loc, _ := time.LoadLocation("Asia/Jakarta")
-	now := time.Now().In(loc)
+	// loc, _ := time.LoadLocation("Asia/Jakarta")
+	// now := time.Now().In(loc)
+	loc, err := time.LoadLocation("Asia/Jakarta")
+    if err != nil {
+        loc = time.UTC // Fallback to UTC if the location fails to load
+    }
+
+    now := time.Now().In(loc)
 	validFrom := qrCodeRecord.ValidFrom.In(loc)
 	validTo := qrCodeRecord.ValidTo.In(loc)
 	fmt.Println("now date is : ", now)
